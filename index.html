@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volc Search</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #fff; color: #202124; }
+        .header { display: flex; align-items: center; padding: 20px 30px; border-bottom: 1px solid #ebebeb; position: sticky; top: 0; background: #fff; z-index: 100; }
+        .logo { font-size: 32px; font-weight: 900; color: #4285f4; margin-right: 30px; letter-spacing: -1px; }
+        .search-box { display: flex; width: 100%; max-width: 600px; border: 1px solid #dfe1e5; border-radius: 24px; padding: 10px 20px; box-shadow: 0 1px 6px rgba(32,33,36,.28); transition: all 0.3s;}
+        .search-box input { border: none; outline: none; width: 100%; font-size: 16px; }
+        .tabs { display: flex; gap: 20px; padding: 10px 100px; border-bottom: 1px solid #ebebeb; }
+        .tab { cursor: pointer; color: #5f6368; padding-bottom: 10px; font-weight: 500; }
+        .tab.active { color: #1a73e8; border-bottom: 3px solid #1a73e8; }
+        
+        .results-container { padding: 30px 100px; max-width: 800px; }
+        
+        /* All Tab Styles */
+        .result-item { margin-bottom: 30px; }
+        .result-url { color: #202124; font-size: 14px; margin-bottom: 2px; }
+        .result-title { color: #1a0dab; font-size: 20px; text-decoration: none; display: block; margin-bottom: 3px; }
+        .result-title:hover { text-decoration: underline; }
+        .result-desc { color: #4d5156; font-size: 14px; line-height: 1.6; }
+        
+        /* Photo & Video Grid Styles */
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 30px 100px;}
+        .grid-item { border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s;}
+        .grid-item:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.2); transform: translateY(-2px);}
+        .grid-item img, .grid-item video { width: 100%; height: 150px; object-fit: cover; }
+        .grid-info { padding: 10px; font-size: 14px; }
+        .grid-info a { color: #1a0dab; text-decoration: none; display: block; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        
+        @media (max-width: 768px) {
+            .tabs, .results-container, .grid-container { padding: 20px; }
+            .header { flex-direction: column; align-items: flex-start; }
+            .logo { margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">Volc</div>
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="Search the Volc Engine...">
+    </div>
+</div>
+
+<div class="tabs">
+    <div class="tab active" onclick="switchTab('all')">All</div>
+    <div class="tab" onclick="switchTab('photos')">Photos</div>
+    <div class="tab" onclick="switchTab('videos')">Videos</div>
+</div>
+
+<div id="resultsArea"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDAbAA6qjoL8F3gGYcLy1ZQpaDqDGVrXR0",
+      authDomain: "nexus-88852.firebaseapp.com",
+      databaseURL: "https://nexus-88852-default-rtdb.firebaseio.com",
+      projectId: "nexus-88852",
+      storageBucket: "nexus-88852.firebasestorage.app",
+      messagingSenderId: "123427141307",
+      appId: "1:123427141307:web:10cf8b8b589a1874fa9b9e"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let allData = [];
+    let currentTab = 'all';
+
+    // Load data from Firebase
+    async function loadData() {
+        const snapshot = await get(ref(db, 'volc_index'));
+        if (snapshot.exists()) {
+            allData = Object.values(snapshot.val());
+        }
+    }
+    loadData();
+
+    // Smart Search Engine Algorithm (Included AI logic)
+    function searchEngineLogic(query) {
+        if(!query) return [];
+        const qWords = query.toLowerCase().split(' ');
+        
+        let results = allData.map(item => {
+            let score = 0;
+            const title = item.title.toLowerCase();
+            const desc = item.desc.toLowerCase();
+            const keys = item.keywords.toLowerCase();
+
+            // Exact match gets highest priority
+            if (title.includes(query.toLowerCase())) score += 10;
+            
+            // Keyword & word matching
+            qWords.forEach(w => {
+                if(keys.includes(w)) score += 5;
+                if(title.includes(w)) score += 3;
+                if(desc.includes(w)) score += 1;
+            });
+
+            return { ...item, score };
+        });
+
+        // Sort by relevance (Score) and remove 0 score
+        return results.filter(r => r.score > 0).sort((a, b) => b.score - a.score);
+    }
+
+    // Render Results based on active tab
+    function renderResults() {
+        const query = document.getElementById('searchInput').value;
+        const results = searchEngineLogic(query);
+        const container = document.getElementById('resultsArea');
+        container.innerHTML = '';
+
+        if(results.length === 0 && query !== '') {
+            container.innerHTML = `<div class="results-container"><p>No results found for "<b>${query}</b>"</p></div>`;
+            return;
+        }
+
+        if (currentTab === 'all') {
+            container.className = 'results-container';
+            results.forEach(res => {
+                container.innerHTML += `
+                    <div class="result-item">
+                        <div class="result-url">${res.url}</div>
+                        <a href="${res.url}" target="_blank" class="result-title">${res.title}</a>
+                        <div class="result-desc">${res.desc}</div>
+                    </div>
+                `;
+            });
+        } 
+        else if (currentTab === 'photos') {
+            container.className = 'grid-container';
+            const photos = results.filter(r => r.imageUrl);
+            photos.forEach(res => {
+                container.innerHTML += `
+                    <div class="grid-item">
+                        <a href="${res.url}" target="_blank"><img src="${res.imageUrl}" alt="${res.title}"></a>
+                        <div class="grid-info"><a href="${res.url}" target="_blank">${res.title}</a></div>
+                    </div>
+                `;
+            });
+        } 
+        else if (currentTab === 'videos') {
+            container.className = 'grid-container';
+            const videos = results.filter(r => r.videoUrl);
+            videos.forEach(res => {
+                container.innerHTML += `
+                    <div class="grid-item">
+                        <a href="${res.url}" target="_blank">
+                           <video src="${res.videoUrl}" muted onmouseover="this.play()" onmouseout="this.pause()"></video>
+                        </a>
+                        <div class="grid-info"><a href="${res.url}" target="_blank">${res.title}</a></div>
+                    </div>
+                `;
+            });
+        }
+    }
+
+    // Event Listeners
+    document.getElementById('searchInput').addEventListener('keyup', renderResults);
+
+    window.switchTab = function(tabName) {
+        currentTab = tabName;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        event.target.classList.add('active');
+        renderResults();
+    }
+</script>
+</body>
+</html>
