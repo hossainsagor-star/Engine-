@@ -3,176 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volc Search</title>
+    <title>Volc</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; background: #fff; color: #202124; }
-        .header { display: flex; align-items: center; padding: 20px 30px; border-bottom: 1px solid #ebebeb; position: sticky; top: 0; background: #fff; z-index: 100; }
-        .logo { font-size: 32px; font-weight: 900; color: #4285f4; margin-right: 30px; letter-spacing: -1px; }
-        .search-box { display: flex; width: 100%; max-width: 600px; border: 1px solid #dfe1e5; border-radius: 24px; padding: 10px 20px; box-shadow: 0 1px 6px rgba(32,33,36,.28); transition: all 0.3s;}
-        .search-box input { border: none; outline: none; width: 100%; font-size: 16px; }
-        .tabs { display: flex; gap: 20px; padding: 10px 100px; border-bottom: 1px solid #ebebeb; }
-        .tab { cursor: pointer; color: #5f6368; padding-bottom: 10px; font-weight: 500; }
-        .tab.active { color: #1a73e8; border-bottom: 3px solid #1a73e8; }
+        body { margin: 0; font-family: arial, sans-serif; background: #fff; color: #202124; overflow-x: hidden; }
+        * { box-sizing: border-box; } a { text-decoration: none; }
+        #home-page { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .logo-large { font-size: 90px; font-weight: bold; color: #5f6368; letter-spacing: -4px; margin-bottom: 30px; user-select: none; }
+        .logo-large span:nth-child(1) { color: #4285f4; } .logo-large span:nth-child(2) { color: #ea4335; } .logo-large span:nth-child(3) { color: #fbbc05; } .logo-large span:nth-child(4) { color: #34a853; }
+        .search-container { position: relative; width: 100%; max-width: 584px; margin-bottom: 30px; }
+        .search-box { display: flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 0 14px; height: 46px; transition: 0.2s; }
+        .search-box:hover, .search-box.focused { box-shadow: 0 1px 6px rgba(32,33,36,.28); border-color: transparent; }
+        .search-icon { width: 20px; height: 20px; fill: #9aa0a6; margin-right: 10px; }
+        .search-box input { flex: 1; border: none; outline: none; font-size: 16px; height: 100%; background: transparent; }
+        .home-btns { display: flex; justify-content: center; gap: 12px; }
+        .home-btns button { background: #f8f9fa; border: 1px solid #f8f9fa; color: #3c4043; padding: 0 16px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .home-btns button:hover { border: 1px solid #dadce0; box-shadow: 0 1px 1px rgba(0,0,0,.1); color: #202124; }
+        #serp-page { display: none; flex-direction: column; min-height: 100vh; }
+        .serp-header { display: flex; align-items: center; padding: 20px 30px 0; gap: 30px; }
+        .logo-small { font-size: 30px; font-weight: bold; letter-spacing: -1px; cursor: pointer; user-select: none; }
+        .logo-small span:nth-child(1) { color: #4285f4; } .logo-small span:nth-child(2) { color: #ea4335; } .logo-small span:nth-child(3) { color: #fbbc05; } .logo-small span:nth-child(4) { color: #34a853; }
+        .serp-search-box { flex: 1; max-width: 692px; display: flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 0 16px; height: 44px; box-shadow: 0 1px 6px rgba(32,33,36,.28); }
+        .serp-search-box input { flex: 1; border: none; outline: none; font-size: 16px; height: 100%; margin-left: 10px; }
+        .clear-btn { font-size: 18px; color: #70757a; cursor: pointer; padding: 0 10px; display: none; }
+        .tabs { display: flex; margin-left: 160px; margin-top: 15px; border-bottom: 1px solid #ebebeb; }
+        .tab { padding: 10px 15px 12px; color: #1a73e8; font-size: 14px; position: relative; display: flex; align-items: center; gap: 5px; }
+        .tab::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: #1a73e8; }
         
-        .results-container { padding: 30px 100px; max-width: 800px; }
+        #results-container { padding: 0 160px 40px; max-width: 850px; }
+        .search-stats { color: #70757a; font-size: 14px; padding: 15px 0; margin-bottom: 5px; }
         
-        /* All Tab Styles */
-        .result-item { margin-bottom: 30px; }
-        .result-url { color: #202124; font-size: 14px; margin-bottom: 2px; }
-        .result-title { color: #1a0dab; font-size: 20px; text-decoration: none; display: block; margin-bottom: 3px; }
+        /* Updated Result Item layout for thumbnail */
+        .result-item { margin-bottom: 30px; display: flex; max-width: 650px; gap: 20px; align-items: flex-start; }
+        .result-content { flex: 1; }
+        .result-url { display: flex; align-items: center; color: #202124; font-size: 14px; margin-bottom: 4px; padding-top: 5px; }
+        .result-url img { width: 18px; height: 18px; margin-right: 12px; border-radius: 50%; background: #f1f3f4; }
+        .result-title { color: #1a0dab; font-size: 20px; text-decoration: none; display: inline-block; margin-bottom: 4px; padding-top: 4px;}
         .result-title:hover { text-decoration: underline; }
-        .result-desc { color: #4d5156; font-size: 14px; line-height: 1.6; }
+        .result-desc { color: #4d5156; font-size: 14px; line-height: 1.58; word-wrap: break-word; }
         
-        /* Photo & Video Grid Styles */
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; padding: 30px 100px;}
-        .grid-item { border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.1); transition: 0.3s;}
-        .grid-item:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.2); transform: translateY(-2px);}
-        .grid-item img, .grid-item video { width: 100%; height: 150px; object-fit: cover; }
-        .grid-info { padding: 10px; font-size: 14px; }
-        .grid-info a { color: #1a0dab; text-decoration: none; display: block; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        
-        @media (max-width: 768px) {
-            .tabs, .results-container, .grid-container { padding: 20px; }
-            .header { flex-direction: column; align-items: flex-start; }
-            .logo { margin-bottom: 15px; }
+        .result-thumb { flex-shrink: 0; margin-top: 10px; }
+        .result-thumb img { width: 104px; height: 104px; object-fit: cover; border-radius: 8px; border: 1px solid #ebebeb; }
+
+        @media (max-width: 768px) { 
+            .tabs, #results-container { margin-left: 20px; padding: 20px; } 
+            .serp-header { flex-direction: column; align-items: flex-start; gap: 15px; } 
+            .serp-search-box { width: 100%; max-width: 100%; } 
+            .result-thumb img { width: 80px; height: 80px; }
         }
     </style>
 </head>
 <body>
-
-<div class="header">
-    <div class="logo">Volc</div>
-    <div class="search-box">
-        <input type="text" id="searchInput" placeholder="Search the Volc Engine...">
+    <div id="home-page">
+        <div class="logo-large"><span>V</span><span>o</span><span>l</span><span>c</span></div>
+        <div class="search-container">
+            <div class="search-box" id="home-search-box">
+                <svg class="search-icon" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"></path></svg>
+                <input type="text" id="home-search" autocomplete="off" autofocus>
+            </div>
+        </div>
+        <div class="home-btns">
+            <button onclick="triggerSearch('home-search')">Volc Search</button>
+            <button>I'm Feeling Lucky</button>
+        </div>
     </div>
-</div>
 
-<div class="tabs">
-    <div class="tab active" onclick="switchTab('all')">All</div>
-    <div class="tab" onclick="switchTab('photos')">Photos</div>
-    <div class="tab" onclick="switchTab('videos')">Videos</div>
-</div>
+    <div id="serp-page">
+        <div class="serp-header">
+            <div class="logo-small" onclick="goHome()"><span>V</span><span>o</span><span>l</span><span>c</span></div>
+            <div class="serp-search-box">
+                <input type="text" id="serp-search" oninput="toggleClearBtn()" onkeyup="if(event.key === 'Enter') triggerSearch('serp-search')">
+                <div class="clear-btn" id="clear-btn" onclick="clearSearch()">✖</div>
+            </div>
+        </div>
+        <div class="tabs"><div class="tab">All</div></div>
+        <div id="results-container"></div>
+    </div>
 
-<div id="resultsArea"></div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDAbAA6qjoL8F3gGYcLy1ZQpaDqDGVrXR0",
-      authDomain: "nexus-88852.firebaseapp.com",
-      databaseURL: "https://nexus-88852-default-rtdb.firebaseio.com",
-      projectId: "nexus-88852",
-      storageBucket: "nexus-88852.firebasestorage.app",
-      messagingSenderId: "123427141307",
-      appId: "1:123427141307:web:10cf8b8b589a1874fa9b9e"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-
-    let allData = [];
-    let currentTab = 'all';
-
-    // Load data from Firebase
-    async function loadData() {
-        const snapshot = await get(ref(db, 'volc_index'));
-        if (snapshot.exists()) {
-            allData = Object.values(snapshot.val());
-        }
-    }
-    loadData();
-
-    // Smart Search Engine Algorithm (Included AI logic)
-    function searchEngineLogic(query) {
-        if(!query) return [];
-        const qWords = query.toLowerCase().split(' ');
-        
-        let results = allData.map(item => {
-            let score = 0;
-            const title = item.title.toLowerCase();
-            const desc = item.desc.toLowerCase();
-            const keys = item.keywords.toLowerCase();
-
-            // Exact match gets highest priority
-            if (title.includes(query.toLowerCase())) score += 10;
-            
-            // Keyword & word matching
-            qWords.forEach(w => {
-                if(keys.includes(w)) score += 5;
-                if(title.includes(w)) score += 3;
-                if(desc.includes(w)) score += 1;
-            });
-
-            return { ...item, score };
+        const app = initializeApp({
+            apiKey: "AIzaSyDAbAA6qjoL8F3gGYcLy1ZQpaDqDGVrXR0",
+            authDomain: "nexus-88852.firebaseapp.com",
+            databaseURL: "https://nexus-88852-default-rtdb.firebaseio.com",
+            projectId: "nexus-88852"
         });
+        const db = getDatabase(app);
+        let dbData = [];
 
-        // Sort by relevance (Score) and remove 0 score
-        return results.filter(r => r.score > 0).sort((a, b) => b.score - a.score);
-    }
+        get(ref(db, 'volc_db')).then(snap => { if (snap.exists()) dbData = Object.values(snap.val()); });
 
-    // Render Results based on active tab
-    function renderResults() {
-        const query = document.getElementById('searchInput').value;
-        const results = searchEngineLogic(query);
-        const container = document.getElementById('resultsArea');
-        container.innerHTML = '';
+        const hsInput = document.getElementById('home-search');
+        const hsBox = document.getElementById('home-search-box');
+        hsInput.addEventListener('focus', () => hsBox.classList.add('focused'));
+        hsInput.addEventListener('blur', () => hsBox.classList.remove('focused'));
 
-        if(results.length === 0 && query !== '') {
-            container.innerHTML = `<div class="results-container"><p>No results found for "<b>${query}</b>"</p></div>`;
-            return;
+        function generateCleanUrl(showUrl) {
+            let u = showUrl.startsWith('http') ? showUrl : 'https://' + showUrl;
+            try {
+                let parsed = new URL(u);
+                let host = parsed.hostname.replace('www.', '');
+                let path = parsed.pathname.split('/').filter(p => p).join(' › ');
+                return path ? `${host} › ${path}` : host;
+            } catch(e) { return showUrl; }
         }
 
-        if (currentTab === 'all') {
-            container.className = 'results-container';
+        function getEditDistance(a, b) {
+            if(!a.length) return b.length; if(!b.length) return a.length;
+            let m = []; for(let i=0; i<=b.length; i++) m[i] = [i]; for(let j=0; j<=a.length; j++) m[0][j] = j;
+            for(let i=1; i<=b.length; i++) {
+                for(let j=1; j<=a.length; j++) {
+                    if(b.charAt(i-1) === a.charAt(j-1)) m[i][j] = m[i-1][j-1];
+                    else m[i][j] = Math.min(m[i-1][j-1]+1, m[i][j-1]+1, m[i-1][j]+1);
+                }
+            } return m[b.length][a.length];
+        }
+
+        function performSearch(query) {
+            if(!query) return [];
+            let qWords = query.toLowerCase().trim().split(/\s+/);
+            
+            return dbData.map(item => {
+                let score = 0;
+                let t = item.title.toLowerCase(), d = item.desc.toLowerCase(), k = (item.keywords || "").toLowerCase();
+                let sUrl = (item.showUrl || "").toLowerCase();
+                let itemWords = [...t.split(/\s+/), ...k.split(/,\s*/)];
+                
+                if(t.includes(query.toLowerCase())) score += 100; 
+
+                qWords.forEach(qw => {
+                    if(t.includes(qw)) score += 20; 
+                    if(k.includes(qw)) score += 15; 
+                    if(d.includes(qw)) score += 5;
+                    if(sUrl.includes(qw)) score += 10;
+                    
+                    if(qw.length > 3) {
+                        itemWords.forEach(iw => {
+                            if(Math.abs(qw.length - iw.length) <= 2) {
+                                let dist = getEditDistance(qw, iw);
+                                if(dist === 1) score += 10;
+                                else if(dist === 2) score += 5;
+                            }
+                        });
+                    }
+                });
+
+                return { ...item, score, cleanUrl: generateCleanUrl(item.showUrl || item.url) };
+            }).filter(i => i.score > 0).sort((a,b) => b.score - a.score);
+        }
+
+        window.renderResults = function(query) {
+            let start = performance.now();
+            const results = performSearch(query);
+            let timeTaken = ((performance.now() - start) / 1000).toFixed(2);
+            const container = document.getElementById('results-container');
+            container.innerHTML = '';
+
+            if(results.length === 0) {
+                container.innerHTML = `<div style="margin-top:40px;"><p style="font-size:18px;">Your search - <b>${query}</b> - did not match any documents.</p></div>`;
+                return;
+            }
+
+            container.innerHTML = `<div class="search-stats">About ${results.length} results (${timeTaken} seconds)</div>`;
+
             results.forEach(res => {
+                let highlightedDesc = res.desc;
+                query.split(/\s+/).forEach(qw => {
+                    if(qw.length > 2) highlightedDesc = highlightedDesc.replace(new RegExp(`(${qw})`, "gi"), "<b>$1</b>");
+                });
+
+                // Check if Base64 image exists
+                let thumbnailHtml = res.imgBase64 ? `
+                    <div class="result-thumb">
+                        <a href="${res.url}" target="_self"><img src="${res.imgBase64}" alt="Thumbnail"></a>
+                    </div>
+                ` : '';
+
                 container.innerHTML += `
                     <div class="result-item">
-                        <div class="result-url">${res.url}</div>
-                        <a href="${res.url}" target="_blank" class="result-title">${res.title}</a>
-                        <div class="result-desc">${res.desc}</div>
-                    </div>
-                `;
-            });
-        } 
-        else if (currentTab === 'photos') {
-            container.className = 'grid-container';
-            const photos = results.filter(r => r.imageUrl);
-            photos.forEach(res => {
-                container.innerHTML += `
-                    <div class="grid-item">
-                        <a href="${res.url}" target="_blank"><img src="${res.imageUrl}" alt="${res.title}"></a>
-                        <div class="grid-info"><a href="${res.url}" target="_blank">${res.title}</a></div>
-                    </div>
-                `;
-            });
-        } 
-        else if (currentTab === 'videos') {
-            container.className = 'grid-container';
-            const videos = results.filter(r => r.videoUrl);
-            videos.forEach(res => {
-                container.innerHTML += `
-                    <div class="grid-item">
-                        <a href="${res.url}" target="_blank">
-                           <video src="${res.videoUrl}" muted onmouseover="this.play()" onmouseout="this.pause()"></video>
-                        </a>
-                        <div class="grid-info"><a href="${res.url}" target="_blank">${res.title}</a></div>
+                        <div class="result-content">
+                            <a href="${res.url}" target="_self" class="result-url">
+                                <img src="https://www.google.com/s2/favicons?domain=${res.showUrl || res.url}&sz=32" alt="">
+                                <span>${res.cleanUrl}</span>
+                            </a>
+                            <a href="${res.url}" target="_self" class="result-title">${res.title}</a>
+                            <div class="result-desc">${highlightedDesc}</div>
+                        </div>
+                        ${thumbnailHtml}
                     </div>
                 `;
             });
         }
-    }
 
-    // Event Listeners
-    document.getElementById('searchInput').addEventListener('keyup', renderResults);
+        window.triggerSearch = function(inputId) {
+            let val = document.getElementById(inputId).value.trim();
+            if(!val) return;
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('serp-page').style.display = 'flex';
+            document.getElementById('serp-search').value = val;
+            toggleClearBtn();
+            renderResults(val);
+        }
 
-    window.switchTab = function(tabName) {
-        currentTab = tabName;
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        event.target.classList.add('active');
-        renderResults();
-    }
-</script>
+        document.getElementById('home-search').addEventListener('keypress', e => { if(e.key === 'Enter') triggerSearch('home-search'); });
+        window.goHome = function() { document.getElementById('serp-page').style.display = 'none'; document.getElementById('home-page').style.display = 'flex'; document.getElementById('home-search').value = ''; document.getElementById('serp-search').value = ''; }
+        window.toggleClearBtn = function() { document.getElementById('clear-btn').style.display = document.getElementById('serp-search').value ? 'block' : 'none'; }
+        window.clearSearch = function() { document.getElementById('serp-search').value = ''; toggleClearBtn(); }
+    </script>
 </body>
 </html>
