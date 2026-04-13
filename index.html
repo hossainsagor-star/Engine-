@@ -18,6 +18,7 @@
         .home-btns { display: flex; justify-content: center; gap: 12px; }
         .home-btns button { background: #f8f9fa; border: 1px solid #f8f9fa; color: #3c4043; padding: 0 16px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 14px; }
         .home-btns button:hover { border: 1px solid #dadce0; box-shadow: 0 1px 1px rgba(0,0,0,.1); color: #202124; }
+        
         #serp-page { display: none; flex-direction: column; min-height: 100vh; }
         .serp-header { display: flex; align-items: center; padding: 20px 30px 0; gap: 30px; }
         .logo-small { font-size: 30px; font-weight: bold; letter-spacing: -1px; cursor: pointer; user-select: none; }
@@ -32,11 +33,13 @@
         #results-container { padding: 0 160px 40px; max-width: 850px; }
         .search-stats { color: #70757a; font-size: 14px; padding: 15px 0; margin-bottom: 5px; }
         
-        /* Updated Result Item layout for thumbnail */
         .result-item { margin-bottom: 30px; display: flex; max-width: 650px; gap: 20px; align-items: flex-start; }
         .result-content { flex: 1; }
         .result-url { display: flex; align-items: center; color: #202124; font-size: 14px; margin-bottom: 4px; padding-top: 5px; }
-        .result-url img { width: 18px; height: 18px; margin-right: 12px; border-radius: 50%; background: #f1f3f4; }
+        
+        /* Fixed Logo Style */
+        .result-url img { width: 18px; height: 18px; margin-right: 12px; border-radius: 50%; background: #f1f3f4; object-fit: cover; }
+        
         .result-title { color: #1a0dab; font-size: 20px; text-decoration: none; display: inline-block; margin-bottom: 4px; padding-top: 4px;}
         .result-title:hover { text-decoration: underline; }
         .result-desc { color: #4d5156; font-size: 14px; line-height: 1.58; word-wrap: break-word; }
@@ -109,6 +112,12 @@
             } catch(e) { return showUrl; }
         }
 
+        function getAbsoluteUrl(url) {
+            if(!url) return '#';
+            if(url.startsWith('http://') || url.startsWith('https://')) return url;
+            return 'https://' + url;
+        }
+
         function getEditDistance(a, b) {
             if(!a.length) return b.length; if(!b.length) return a.length;
             let m = []; for(let i=0; i<=b.length; i++) m[i] = [i]; for(let j=0; j<=a.length; j++) m[0][j] = j;
@@ -167,27 +176,34 @@
 
             container.innerHTML = `<div class="search-stats">About ${results.length} results (${timeTaken} seconds)</div>`;
 
+            // Default Globe Icon SVG (No external links)
+            const defaultGlobeLogo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235f6368'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/></svg>";
+
             results.forEach(res => {
                 let highlightedDesc = res.desc;
                 query.split(/\s+/).forEach(qw => {
                     if(qw.length > 2) highlightedDesc = highlightedDesc.replace(new RegExp(`(${qw})`, "gi"), "<b>$1</b>");
                 });
 
-                // Check if Base64 image exists
+                let finalTargetUrl = getAbsoluteUrl(res.url);
+                
+                // Use uploaded Logo Base64 or Fallback to Default Globe
+                let logoImageSource = res.logoBase64 ? res.logoBase64 : defaultGlobeLogo;
+
                 let thumbnailHtml = res.imgBase64 ? `
                     <div class="result-thumb">
-                        <a href="${res.url}" target="_self"><img src="${res.imgBase64}" alt="Thumbnail"></a>
+                        <a href="${finalTargetUrl}" target="_self"><img src="${res.imgBase64}" alt="Thumbnail"></a>
                     </div>
                 ` : '';
 
                 container.innerHTML += `
                     <div class="result-item">
                         <div class="result-content">
-                            <a href="${res.url}" target="_self" class="result-url">
-                                <img src="https://www.google.com/s2/favicons?domain=${res.showUrl || res.url}&sz=32" alt="">
+                            <a href="${finalTargetUrl}" target="_self" class="result-url">
+                                <img src="${logoImageSource}" alt="Logo">
                                 <span>${res.cleanUrl}</span>
                             </a>
-                            <a href="${res.url}" target="_self" class="result-title">${res.title}</a>
+                            <a href="${finalTargetUrl}" target="_self" class="result-title">${res.title}</a>
                             <div class="result-desc">${highlightedDesc}</div>
                         </div>
                         ${thumbnailHtml}
