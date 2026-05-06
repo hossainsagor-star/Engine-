@@ -2,230 +2,1046 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volc</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dots & Boxes Online</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { margin: 0; font-family: arial, sans-serif; background: #fff; color: #202124; overflow-x: hidden; }
-        * { box-sizing: border-box; } a { text-decoration: none; }
-        #home-page { height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .logo-large { font-size: 90px; font-weight: bold; color: #5f6368; letter-spacing: -4px; margin-bottom: 30px; user-select: none; }
-        .logo-large span:nth-child(1) { color: #4285f4; } .logo-large span:nth-child(2) { color: #ea4335; } .logo-large span:nth-child(3) { color: #fbbc05; } .logo-large span:nth-child(4) { color: #34a853; }
-        .search-container { position: relative; width: 100%; max-width: 584px; margin-bottom: 30px; }
-        .search-box { display: flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 0 14px; height: 46px; transition: 0.2s; }
-        .search-box:hover, .search-box.focused { box-shadow: 0 1px 6px rgba(32,33,36,.28); border-color: transparent; }
-        .search-icon { width: 20px; height: 20px; fill: #9aa0a6; margin-right: 10px; }
-        .search-box input { flex: 1; border: none; outline: none; font-size: 16px; height: 100%; background: transparent; }
-        .home-btns { display: flex; justify-content: center; gap: 12px; }
-        .home-btns button { background: #f8f9fa; border: 1px solid #f8f9fa; color: #3c4043; padding: 0 16px; height: 36px; border-radius: 4px; cursor: pointer; font-size: 14px; }
-        .home-btns button:hover { border: 1px solid #dadce0; box-shadow: 0 1px 1px rgba(0,0,0,.1); color: #202124; }
-        
-        #serp-page { display: none; flex-direction: column; min-height: 100vh; }
-        .serp-header { display: flex; align-items: center; padding: 20px 30px 0; gap: 30px; }
-        .logo-small { font-size: 30px; font-weight: bold; letter-spacing: -1px; cursor: pointer; user-select: none; }
-        .logo-small span:nth-child(1) { color: #4285f4; } .logo-small span:nth-child(2) { color: #ea4335; } .logo-small span:nth-child(3) { color: #fbbc05; } .logo-small span:nth-child(4) { color: #34a853; }
-        .serp-search-box { flex: 1; max-width: 692px; display: flex; align-items: center; border: 1px solid #dfe1e5; border-radius: 24px; padding: 0 16px; height: 44px; box-shadow: 0 1px 6px rgba(32,33,36,.28); }
-        .serp-search-box input { flex: 1; border: none; outline: none; font-size: 16px; height: 100%; margin-left: 10px; }
-        .clear-btn { font-size: 18px; color: #70757a; cursor: pointer; padding: 0 10px; display: none; }
-        .tabs { display: flex; margin-left: 160px; margin-top: 15px; border-bottom: 1px solid #ebebeb; }
-        .tab { padding: 10px 15px 12px; color: #1a73e8; font-size: 14px; position: relative; display: flex; align-items: center; gap: 5px; }
-        .tab::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: #1a73e8; }
-        
-        #results-container { padding: 0 160px 40px; max-width: 850px; }
-        .search-stats { color: #70757a; font-size: 14px; padding: 15px 0; margin-bottom: 5px; }
-        
-        .result-item { margin-bottom: 30px; display: flex; max-width: 650px; gap: 20px; align-items: flex-start; }
-        .result-content { flex: 1; }
-        .result-url { display: flex; align-items: center; color: #202124; font-size: 14px; margin-bottom: 4px; padding-top: 5px; }
-        
-        /* Fixed Logo Style */
-        .result-url img { width: 18px; height: 18px; margin-right: 12px; border-radius: 50%; background: #f1f3f4; object-fit: cover; }
-        
-        .result-title { color: #1a0dab; font-size: 20px; text-decoration: none; display: inline-block; margin-bottom: 4px; padding-top: 4px;}
-        .result-title:hover { text-decoration: underline; }
-        .result-desc { color: #4d5156; font-size: 14px; line-height: 1.58; word-wrap: break-word; }
-        
-        .result-thumb { flex-shrink: 0; margin-top: 10px; }
-        .result-thumb img { width: 104px; height: 104px; object-fit: cover; border-radius: 8px; border: 1px solid #ebebeb; }
+        :root {
+            --bg-color: #121212; --surface-color: #1e1e1e;
+            --primary: #bb86fc; --secondary: #03dac6; --error: #cf6679;
+            --text-main: #ffffff; --text-muted: #aaaaaa;
+            --line-empty: rgba(255, 255, 255, 0.08); --line-hover: rgba(187, 134, 252, 0.6);
+            --p0: #bb86fc; --p1: #03dac6; --p2: #ffb74d; --p3: #f06292;
+        }
+        body.light-mode {
+            --bg-color: #f0f2f5; --surface-color: #ffffff;
+            --primary: #6200ee; --secondary: #018786; --error: #b00020;
+            --text-main: #000000; --text-muted: #666666;
+            --line-empty: rgba(0, 0, 0, 0.08); --line-hover: rgba(98, 0, 238, 0.4);
+        }
 
-        @media (max-width: 768px) { 
-            .tabs, #results-container { margin-left: 20px; padding: 20px; } 
-            .serp-header { flex-direction: column; align-items: flex-start; gap: 15px; } 
-            .serp-search-box { width: 100%; max-width: 100%; } 
-            .result-thumb img { width: 80px; height: 80px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; user-select: none; }
+        body { background-color: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: background 0.3s, color 0.3s; }
+        h1, h2, h3 { text-align: center; margin-bottom: 15px; }
+        .hidden { display: none !important; }
+        .screen { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; padding: 15px; overflow-y: auto; opacity: 0; transition: opacity 0.3s ease; }
+        .screen.active { opacity: 1; }
+        .panel { background: var(--surface-color); padding: 25px; border-radius: 16px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); width: 100%; max-width: 400px; text-align: center; transition: transform 0.2s ease; }
+        .panel:hover { transform: translateY(-1px); }
+        button { background: var(--primary); color: #fff; border: none; padding: 12px 20px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.2s ease; margin: 5px 0; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        body:not(.light-mode) button { color: #000; }
+        button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        button:active:not(:disabled) { transform: translateY(0); }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        button.btn-danger { background: var(--error); color: white; }
+        button.btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        input, select { width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 8px; border: 2px solid var(--surface-color); background: var(--bg-color); color: var(--text-main); font-size: 16px; outline: none; transition: border 0.3s, box-shadow 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.3); }
+        #top-bar { position: absolute; top: 15px; right: 15px; z-index: 50; display: flex; gap: 10px; align-items: center; }
+        .icon-btn { background: var(--surface-color); color: var(--text-main); width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s, background 0.3s; font-size: 18px; }
+        .icon-btn:hover { transform: scale(1.1); }
+        .icon-btn i { transition: color 0.3s; }
+        .profile-avatar-small { width: 35px; height: 35px; border-radius: 50%; background: var(--surface-color); display: flex; align-items: center; justify-content: center; font-size: 20px; margin-right: 5px; box-shadow: 0 2px 6px rgba(0,0,0,0.2); cursor: pointer; transition: transform 0.2s; }
+        .profile-avatar-small:hover { transform: scale(1.1); }
+        #game-header { width: 100%; max-width: 600px; margin-bottom: 10px; display: flex; flex-direction: column; align-items: center; }
+        .room-bar { display: flex; justify-content: space-between; width: 100%; align-items: center; padding: 12px 15px; background: var(--surface-color); border-radius: 12px; margin-bottom: 15px; font-size: 15px; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .room-bar:hover { transform: translateY(-1px); }
+        .scoreboard { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; width: 100%; margin-bottom: 15px; }
+        .player-card { background: var(--surface-color); padding: 10px 15px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; min-width: 80px; border: 2px solid transparent; transition: transform 0.2s, border 0.3s, box-shadow 0.3s; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .player-card.active { transform: scale(1.08); border-color: var(--primary); box-shadow: 0 8px 20px rgba(0,0,0,0.2); z-index: 2; }
+        #board-container { width: 100%; max-width: 500px; aspect-ratio: 1/1; background: var(--surface-color); border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); touch-action: none; display: flex; justify-content: center; align-items: center; transition: transform 0.2s; }
+        svg { width: 100%; height: 100%; overflow: visible; }
+        .svg-line-click { stroke: transparent; stroke-width: 30; cursor: pointer; transition: opacity 0.2s; }
+        .svg-line-click:hover + .svg-line-vis { stroke: var(--line-hover); }
+        .svg-line-vis { stroke: var(--line-empty); stroke-width: 8; stroke-linecap: round; pointer-events: none; transition: stroke 0.2s; }
+        .svg-line-vis.claimed { stroke: var(--text-main); }
+        .svg-dot { fill: var(--text-main); transition: fill 0.3s; }
+        .svg-box { animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 0.85; } }
+        #chat-fab { position: fixed; bottom: 25px; right: 25px; background: var(--primary); width: 65px; height: 65px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 26px; cursor: pointer; box-shadow: 0 6px 16px rgba(0,0,0,0.3); z-index: 100; color: #fff; transition: transform 0.2s, background 0.3s; }
+        #chat-fab:hover { transform: scale(1.1); }
+        body:not(.light-mode) #chat-fab { color: #000; }
+        #unread-dot { position: absolute; top: 0; right: 0; background: var(--error); width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--bg-color); display: none; transition: opacity 0.2s; }
+        #chat-modal { position: fixed; bottom: 100px; right: 25px; width: 340px; height: 450px; background: var(--surface-color); border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; z-index: 100; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s; transform-origin: bottom right; overflow: hidden; }
+        #chat-modal.hidden { transform: scale(0); opacity: 0; pointer-events: none; }
+        .chat-messages { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+        .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; font-size: 14px; word-wrap: break-word; line-height: 1.4; transition: transform 0.1s; }
+        .msg:hover { transform: scale(1.01); }
+        .msg-me { background: var(--primary); color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+        body:not(.light-mode) .msg-me { color: #000; }
+        .msg-other { background: var(--bg-color); border: 1px solid var(--text-muted); align-self: flex-start; border-bottom-left-radius: 4px; }
+        .modal-overlay { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.85); display: flex; justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(4px); opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+        .modal-overlay.visible { opacity: 1; pointer-events: auto; }
+        #toast-container { position: fixed; top: 25px; left: 50%; transform: translateX(-50%); z-index: 300; display: flex; flex-direction: column; gap: 12px; pointer-events: none; }
+        .toast { background: var(--secondary); color: #fff; padding: 12px 24px; border-radius: 10px; font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: slideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), fadeOut 0.5s 3s forwards; }
+        body:not(.light-mode) .toast { color: #000; }
+        @keyframes slideDown { from { transform: translateY(-40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; } }
+        .emoji-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin: 15px 0; }
+        .emoji-item { font-size: 24px; background: var(--bg-color); border-radius: 8px; padding: 5px; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; }
+        .emoji-item:hover { transform: scale(1.15); border-color: var(--primary); }
+        .emoji-item.selected { border-color: var(--secondary); background: var(--surface-color); }
+        @media (max-width: 450px) {
+            #chat-modal { width: 90%; right: 5%; bottom: 100px; height: 60vh; }
+            #board-container { padding: 10px; border-radius: 10px; }
+            .emoji-grid { grid-template-columns: repeat(4, 1fr); }
         }
     </style>
 </head>
 <body>
-    <div id="home-page">
-        <div class="logo-large"><span>V</span><span>o</span><span>l</span><span>c</span></div>
-        <div class="search-container">
-            <div class="search-box" id="home-search-box">
-                <svg class="search-icon" focusable="false" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"></path></svg>
-                <input type="text" id="home-search" autocomplete="off" autofocus>
+
+    <div id="toast-container"></div>
+
+    <!-- AUTH SCREEN -->
+    <div id="screen-auth" class="screen active">
+        <div class="panel">
+            <h1><i class="fa-solid fa-gamepad" style="color:var(--primary);"></i> Dots & Boxes</h1>
+            <p style="color:var(--text-muted); margin-bottom: 25px;">Choose your display name & avatar</p>
+            <input type="text" id="input-name" placeholder="Your Display Name" maxlength="15">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <span id="avatar-preview" style="font-size: 30px;">😊</span>
+                <button type="button" id="btn-change-avatar" class="btn-outline" style="width: auto; padding: 8px 12px; font-size: 14px;">Pick Avatar</button>
             </div>
-        </div>
-        <div class="home-btns">
-            <button onclick="triggerSearch('home-search')">Volc Search</button>
-            <button>I'm Feeling Lucky</button>
+            <button id="btn-login">Continue <i class="fa-solid fa-arrow-right"></i></button>
         </div>
     </div>
 
-    <div id="serp-page">
-        <div class="serp-header">
-            <div class="logo-small" onclick="goHome()"><span>V</span><span>o</span><span>l</span><span>c</span></div>
-            <div class="serp-search-box">
-                <input type="text" id="serp-search" oninput="toggleClearBtn()" onkeyup="if(event.key === 'Enter') triggerSearch('serp-search')">
-                <div class="clear-btn" id="clear-btn" onclick="clearSearch()">✖</div>
+    <!-- LOBBY SCREEN -->
+    <div id="screen-lobby" class="screen">
+        <div class="panel">
+            <h2>Welcome, <span id="lbl-player-name" style="color:var(--primary);"></span>!</h2>
+            <button id="btn-create-room"><i class="fa-solid fa-plus"></i> Create New Room</button>
+            <div style="margin:25px 0; border-top:1px solid var(--text-muted); opacity:0.2;"></div>
+            <input type="text" id="input-room-id" placeholder="Enter Room ID" style="text-transform:uppercase; text-align:center; font-weight:bold; letter-spacing:2px;" maxlength="6">
+            <button id="btn-join-room" class="btn-outline"><i class="fa-solid fa-right-to-bracket"></i> Join Room</button>
+        </div>
+    </div>
+
+    <!-- ROOM SCREEN -->
+    <div id="screen-room" class="screen" style="justify-content:flex-start; padding-top:40px;">
+        <div id="game-header">
+            <div class="room-bar">
+                <span>Room: <strong id="lbl-room-id" style="color:var(--secondary); font-size:18px; letter-spacing:1px;"></strong>
+                    <i class="fa-solid fa-copy" id="btn-copy-room" style="cursor:pointer; margin-left:8px; color:var(--text-muted); transition:0.2s;" title="Copy Code"></i>
+                </span>
+                <div style="display:flex; gap:8px;">
+                    <button id="btn-reset" class="btn-danger hidden" style="padding:6px 12px; font-size:13px; width:auto; margin:0;"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+                    <button id="btn-leave" class="btn-outline" style="padding:6px 12px; font-size:13px; width:auto; margin:0;" title="Leave Room"><i class="fa-solid fa-door-open"></i></button>
+                </div>
+            </div>
+
+            <div id="waiting-area" class="panel hidden" style="margin-top:20px;">
+                <h3><i class="fa-solid fa-users"></i> Waiting Lobby</h3>
+                <ul id="player-list" style="list-style:none; text-align:left; margin:20px 0; padding:0;"></ul>
+                <div id="host-controls" class="hidden">
+                    <label style="display:block; text-align:left; font-size:14px; margin-bottom:5px; color:var(--text-muted);">Select Grid Size:</label>
+                    <select id="select-grid-size">
+                        <option value="3">3x3 Boxes (Quick)</option>
+                        <option value="5" selected>5x5 Boxes (Standard)</option>
+                        <option value="7">7x7 Boxes (Long)</option>
+                    </select>
+                    <button id="btn-start-game"><i class="fa-solid fa-play"></i> Start Game</button>
+                </div>
+                <p id="lbl-waiting-msg" style="color:var(--text-muted); font-style:italic;"></p>
+            </div>
+
+            <div id="playing-area" class="hidden" style="width:100%;">
+                <div class="scoreboard" id="scoreboard"></div>
+                <h3 id="lbl-turn-indicator" style="margin:5px 0 15px 0; min-height:28px;"></h3>
+                <div id="board-container">
+                    <svg id="game-svg" viewBox="0 0 1000 1000"></svg>
+                </div>
             </div>
         </div>
-        <div class="tabs"><div class="tab">All</div></div>
-        <div id="results-container"></div>
+    </div>
+
+    <!-- CHAT SYSTEM -->
+    <div id="chat-system" class="hidden">
+        <div id="chat-fab"><i class="fa-solid fa-comment"></i><div id="unread-dot"></div></div>
+        <div id="chat-modal" class="hidden">
+            <div style="padding:15px; background:var(--primary); font-weight:bold; display:flex; justify-content:space-between; color:#fff; align-items:center;">
+                <span style="color:#000;"><i class="fa-solid fa-messages"></i> Room Chat</span>
+                <i class="fa-solid fa-times" id="btn-close-chat" style="cursor:pointer; color:#000; font-size:18px; padding:5px;"></i>
+            </div>
+            <div class="chat-messages" id="chat-messages"></div>
+            <div style="display:flex; padding:12px; border-top:1px solid var(--text-muted); background:var(--surface-color);">
+                <input type="text" id="input-chat" placeholder="Type a message..." style="margin:0; border-radius:24px 0 0 24px; border:1px solid var(--text-muted); border-right:none; flex:1; padding:10px 15px;">
+                <button id="btn-send-chat" style="margin:0; border-radius:0 24px 24px 0; width:50px; padding:0;"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE MODAL -->
+    <div id="profile-modal" class="modal-overlay">
+        <div class="panel" style="max-width: 360px; text-align: center;">
+            <h3>Your Profile</h3>
+            <div style="font-size: 60px; margin: 10px 0;" id="profile-avatar-display"></div>
+            <input type="text" id="profile-name-input" placeholder="Change Display Name" maxlength="15">
+            <p style="color: var(--text-muted); font-size: 14px;">Pick Avatar</p>
+            <div class="emoji-grid" id="emoji-grid"></div>
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button id="btn-save-profile" style="flex:1;">Save</button>
+                <button id="btn-logout" class="btn-outline" style="flex:1; color: var(--error); border-color: var(--error);">Logout</button>
+            </div>
+            <button id="btn-close-profile" class="btn-outline" style="margin-top: 10px;">Cancel</button>
+        </div>
+    </div>
+
+    <!-- CONFIRMATION MODAL -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="panel" style="max-width: 320px;">
+            <h3 id="confirm-title">Confirmation</h3>
+            <p id="confirm-message" style="color:var(--text-muted); margin-bottom: 25px;"></p>
+            <div style="display:flex; gap:12px;">
+                <button id="confirm-btn-yes" style="background:var(--error);">Yes</button>
+                <button id="confirm-btn-no" class="btn-outline">No</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOP BAR with Theme & Profile -->
+    <div id="top-bar">
+        <div class="profile-avatar-small" id="btn-open-profile" title="Profile"><span id="top-avatar-emoji">😊</span></div>
+        <div class="icon-btn" id="btn-theme-toggle" title="Toggle Theme"><i class="fa-solid fa-moon"></i></div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, get, update, onValue, push, serverTimestamp, runTransaction, onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const app = initializeApp({
-            apiKey: "AIzaSyDAbAA6qjoL8F3gGYcLy1ZQpaDqDGVrXR0",
-            authDomain: "nexus-88852.firebaseapp.com",
-            databaseURL: "https://nexus-88852-default-rtdb.firebaseio.com",
-            projectId: "nexus-88852"
-        });
+        const firebaseConfig = {
+            apiKey: "AIzaSyAgDFjhpxYM4CoIHzwCirkJ9kJ-OA0EDGo",
+            authDomain: "business-ff1b4.firebaseapp.com",
+            databaseURL: "https://business-ff1b4-default-rtdb.firebaseio.com",
+            projectId: "business-ff1b4",
+            storageBucket: "business-ff1b4.firebasestorage.app",
+            messagingSenderId: "93668439601",
+            appId: "1:93668439601:web:47c8c1bb8baeb1e2d94710",
+            measurementId: "G-4XKFJPDXSN"
+        };
+        const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
-        let dbData = [];
 
-        get(ref(db, 'volc_db')).then(snap => { if (snap.exists()) dbData = Object.values(snap.val()); });
+        const EMOJIS = ['😊','😂','🤩','😎','🥳','😇','🤖','🎮','💎','⭐','🌈','🔥','🎉','🍕','🚀','🐱','🐶','🦊','🐼','🦄'];
 
-        const hsInput = document.getElementById('home-search');
-        const hsBox = document.getElementById('home-search-box');
-        hsInput.addEventListener('focus', () => hsBox.classList.add('focused'));
-        hsInput.addEventListener('blur', () => hsBox.classList.remove('focused'));
+        const state = {
+            user: null, roomId: null, room: null,
+            unsubRoom: null, unsubChat: null, unsubPresence: null,
+            isChatOpen: false, gameOverAlerted: false,
+            playerColors: ['var(--p0)', 'var(--p1)', 'var(--p2)', 'var(--p3)'],
+            presenceHandled: new Set(),
+            svgInitialized: false,
+            currentGridSize: null,
+            boxAnimations: new Set(),
+            lastKnownBoxes: null
+        };
 
-        function generateCleanUrl(showUrl) {
-            let u = showUrl.startsWith('http') ? showUrl : 'https://' + showUrl;
-            try {
-                let parsed = new URL(u);
-                let host = parsed.hostname.replace('www.', '');
-                let path = parsed.pathname.split('/').filter(p => p).join(' › ');
-                return path ? `${host} › ${path}` : host;
-            } catch(e) { return showUrl; }
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function initAudio() { if (audioCtx.state === 'suspended') audioCtx.resume(); }
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') return;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            if (type === 'line') {
+                osc.type = 'sine'; osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else if (type === 'box') {
+                osc.type = 'triangle'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            }
         }
 
-        function getAbsoluteUrl(url) {
-            if(!url) return '#';
-            if(url.startsWith('http://') || url.startsWith('https://')) return url;
-            return 'https://' + url;
+        const $ = id => document.getElementById(id);
+
+        function setScreenActive(id) {
+            ['screen-auth', 'screen-lobby', 'screen-room'].forEach(s => {
+                const el = $(s);
+                el.classList.remove('active');
+                el.style.display = 'none';
+            });
+            const screen = $(id);
+            screen.style.display = 'flex';
+            setTimeout(() => screen.classList.add('active'), 10);
+            if (id === 'screen-room') $('chat-system').classList.remove('hidden');
+            else $('chat-system').classList.add('hidden');
         }
 
-        function getEditDistance(a, b) {
-            if(!a.length) return b.length; if(!b.length) return a.length;
-            let m = []; for(let i=0; i<=b.length; i++) m[i] = [i]; for(let j=0; j<=a.length; j++) m[0][j] = j;
-            for(let i=1; i<=b.length; i++) {
-                for(let j=1; j<=a.length; j++) {
-                    if(b.charAt(i-1) === a.charAt(j-1)) m[i][j] = m[i-1][j-1];
-                    else m[i][j] = Math.min(m[i-1][j-1]+1, m[i][j-1]+1, m[i-1][j]+1);
-                }
-            } return m[b.length][a.length];
+        function showToast(msg, isErr = false) {
+            const t = document.createElement('div'); t.className = 'toast';
+            t.innerHTML = isErr ? `<i class="fa-solid fa-circle-exclamation"></i> ${msg}` : `<i class="fa-solid fa-check-circle"></i> ${msg}`;
+            if (isErr) t.style.background = 'var(--error)';
+            $('toast-container').appendChild(t); setTimeout(() => t.remove(), 3500);
         }
 
-        function performSearch(query) {
-            if(!query) return [];
-            let qWords = query.toLowerCase().trim().split(/\s+/);
-            
-            return dbData.map(item => {
-                let score = 0;
-                let t = item.title.toLowerCase(), d = item.desc.toLowerCase(), k = (item.keywords || "").toLowerCase();
-                let sUrl = (item.showUrl || "").toLowerCase();
-                let itemWords = [...t.split(/\s+/), ...k.split(/,\s*/)];
-                
-                if(t.includes(query.toLowerCase())) score += 100; 
+        // --- Theme ---
+        function initTheme() {
+            const saved = localStorage.getItem('dotsBoxTheme');
+            if (saved === 'light') document.body.classList.add('light-mode');
+            const icon = $('btn-theme-toggle').querySelector('i');
+            icon.className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+        }
+        $('btn-theme-toggle').addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            const icon = $('btn-theme-toggle').querySelector('i');
+            icon.className = document.body.classList.contains('light-mode') ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+            localStorage.setItem('dotsBoxTheme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
+        });
 
-                qWords.forEach(qw => {
-                    if(t.includes(qw)) score += 20; 
-                    if(k.includes(qw)) score += 15; 
-                    if(d.includes(qw)) score += 5;
-                    if(sUrl.includes(qw)) score += 10;
-                    
-                    if(qw.length > 3) {
-                        itemWords.forEach(iw => {
-                            if(Math.abs(qw.length - iw.length) <= 2) {
-                                let dist = getEditDistance(qw, iw);
-                                if(dist === 1) score += 10;
-                                else if(dist === 2) score += 5;
-                            }
-                        });
+        // --- Profile System ---
+        function getProfile() {
+            const stored = localStorage.getItem('dotsBoxProfile');
+            if (stored) return JSON.parse(stored);
+            return { name: '', avatar: '😊' };
+        }
+        function saveProfile(name, avatar) {
+            const profile = { name, avatar };
+            localStorage.setItem('dotsBoxProfile', JSON.stringify(profile));
+        }
+        function updateUIProfile() {
+            const profile = getProfile();
+            $('top-avatar-emoji').innerText = profile.avatar;
+            $('profile-avatar-display').innerText = profile.avatar;
+            if (state.user) state.user.name = profile.name;
+        }
+
+        // Avatar picker on auth screen
+        $('btn-change-avatar').addEventListener('click', () => {
+            showAvatarPicker('avatar-preview');
+        });
+
+        function showAvatarPicker(previewId) {
+            const grid = $('emoji-grid');
+            grid.innerHTML = '';
+            const preview = $(previewId);
+            EMOJIS.forEach(emoji => {
+                const div = document.createElement('div');
+                div.className = 'emoji-item';
+                div.innerText = emoji;
+                div.addEventListener('click', () => {
+                    preview.innerText = emoji;
+                    if (previewId === 'avatar-preview') {
+                        $('avatar-preview').innerText = emoji;
                     }
                 });
-
-                return { ...item, score, cleanUrl: generateCleanUrl(item.showUrl || item.url) };
-            }).filter(i => i.score > 0).sort((a,b) => b.score - a.score);
-        }
-
-        window.renderResults = function(query) {
-            let start = performance.now();
-            const results = performSearch(query);
-            let timeTaken = ((performance.now() - start) / 1000).toFixed(2);
-            const container = document.getElementById('results-container');
-            container.innerHTML = '';
-
-            if(results.length === 0) {
-                container.innerHTML = `<div style="margin-top:40px;"><p style="font-size:18px;">Your search - <b>${query}</b> - did not match any documents.</p></div>`;
-                return;
-            }
-
-            container.innerHTML = `<div class="search-stats">About ${results.length} results (${timeTaken} seconds)</div>`;
-
-            // Default Globe Icon SVG (No external links)
-            const defaultGlobeLogo = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%235f6368'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z'/></svg>";
-
-            results.forEach(res => {
-                let highlightedDesc = res.desc;
-                query.split(/\s+/).forEach(qw => {
-                    if(qw.length > 2) highlightedDesc = highlightedDesc.replace(new RegExp(`(${qw})`, "gi"), "<b>$1</b>");
-                });
-
-                let finalTargetUrl = getAbsoluteUrl(res.url);
-                
-                // Use uploaded Logo Base64 or Fallback to Default Globe
-                let logoImageSource = res.logoBase64 ? res.logoBase64 : defaultGlobeLogo;
-
-                let thumbnailHtml = res.imgBase64 ? `
-                    <div class="result-thumb">
-                        <a href="${finalTargetUrl}" target="_self"><img src="${res.imgBase64}" alt="Thumbnail"></a>
-                    </div>
-                ` : '';
-
-                container.innerHTML += `
-                    <div class="result-item">
-                        <div class="result-content">
-                            <a href="${finalTargetUrl}" target="_self" class="result-url">
-                                <img src="${logoImageSource}" alt="Logo">
-                                <span>${res.cleanUrl}</span>
-                            </a>
-                            <a href="${finalTargetUrl}" target="_self" class="result-title">${res.title}</a>
-                            <div class="result-desc">${highlightedDesc}</div>
-                        </div>
-                        ${thumbnailHtml}
-                    </div>
-                `;
+                grid.appendChild(div);
             });
         }
 
-        window.triggerSearch = function(inputId) {
-            let val = document.getElementById(inputId).value.trim();
-            if(!val) return;
-            document.getElementById('home-page').style.display = 'none';
-            document.getElementById('serp-page').style.display = 'flex';
-            document.getElementById('serp-search').value = val;
-            toggleClearBtn();
-            renderResults(val);
+        // Open profile modal
+        $('btn-open-profile').addEventListener('click', () => {
+            const profile = getProfile();
+            $('profile-name-input').value = profile.name;
+            $('profile-avatar-display').innerText = profile.avatar;
+            // Refresh emoji grid if needed
+            const grid = $('emoji-grid');
+            if (grid.children.length === 0) showAvatarPicker('profile-avatar-display');
+            else {
+                // Update selected state maybe
+                const emojis = grid.querySelectorAll('.emoji-item');
+                emojis.forEach(el => {
+                    if (el.innerText === profile.avatar) el.classList.add('selected');
+                    else el.classList.remove('selected');
+                });
+            }
+            $('profile-modal').classList.add('visible');
+        });
+
+        $('btn-close-profile').addEventListener('click', () => $('profile-modal').classList.remove('visible'));
+        $('profile-modal').addEventListener('click', (e) => {
+            if (e.target === $('profile-modal')) $('profile-modal').classList.remove('visible');
+        });
+
+        $('btn-save-profile').addEventListener('click', () => {
+            const newName = $('profile-name-input').value.trim();
+            if (!newName) return showToast('Name cannot be empty', true);
+            const newAvatar = $('profile-avatar-display').innerText;
+            saveProfile(newName, newAvatar);
+            updateUIProfile();
+            $('lbl-player-name').innerText = newName;
+            $('profile-modal').classList.remove('visible');
+            showToast('Profile saved!');
+            // Update name in Firebase if in room
+            if (state.roomId && state.room) {
+                update(ref(db, `rooms/${state.roomId}/playerNames/${state.user.uid}`), newName);
+            }
+        });
+
+        $('btn-logout').addEventListener('click', () => {
+            confirmAction('Logout', 'Are you sure you want to logout? You will leave any active room.', () => {
+                leaveRoom(true);
+                localStorage.removeItem('dotsBoxProfile');
+                state.user = null;
+                $('profile-modal').classList.remove('visible');
+                setScreenActive('screen-auth');
+            });
+        });
+
+        $('emoji-grid').addEventListener('click', (e) => {
+            if (e.target.classList.contains('emoji-item')) {
+                const emoji = e.target.innerText;
+                $('profile-avatar-display').innerText = emoji;
+                const grid = $('emoji-grid');
+                grid.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
+                e.target.classList.add('selected');
+            }
+        });
+
+        // --- Custom Confirmation Modal ---
+        let confirmCallback = null;
+        function confirmAction(title, message, onConfirm) {
+            $('confirm-title').innerText = title;
+            $('confirm-message').innerText = message;
+            $('confirm-modal').classList.add('visible');
+            confirmCallback = onConfirm;
+        }
+        $('confirm-btn-yes').addEventListener('click', () => {
+            if (confirmCallback) confirmCallback();
+            $('confirm-modal').classList.remove('visible');
+            confirmCallback = null;
+        });
+        $('confirm-btn-no').addEventListener('click', () => {
+            $('confirm-modal').classList.remove('visible');
+            confirmCallback = null;
+        });
+        $('confirm-modal').addEventListener('click', (e) => {
+            if (e.target === $('confirm-modal')) {
+                $('confirm-modal').classList.remove('visible');
+                confirmCallback = null;
+            }
+        });
+
+        // --- Auth ---
+        function initAuth() {
+            const profile = getProfile();
+            if (profile.name) {
+                state.user = { uid: 'u_' + Date.now() + Math.floor(Math.random() * 1000), name: profile.name, avatar: profile.avatar };
+                $('lbl-player-name').innerText = profile.name;
+                $('top-avatar-emoji').innerText = profile.avatar;
+                setScreenActive('screen-lobby');
+            } else {
+                setScreenActive('screen-auth');
+                updateUIProfile();
+            }
         }
 
-        document.getElementById('home-search').addEventListener('keypress', e => { if(e.key === 'Enter') triggerSearch('home-search'); });
-        window.goHome = function() { document.getElementById('serp-page').style.display = 'none'; document.getElementById('home-page').style.display = 'flex'; document.getElementById('home-search').value = ''; document.getElementById('serp-search').value = ''; }
-        window.toggleClearBtn = function() { document.getElementById('clear-btn').style.display = document.getElementById('serp-search').value ? 'block' : 'none'; }
-        window.clearSearch = function() { document.getElementById('serp-search').value = ''; toggleClearBtn(); }
+        $('btn-login').addEventListener('click', () => {
+            initAudio();
+            const name = $('input-name').value.trim();
+            if (!name) return showToast('Please enter a display name!', true);
+            const avatar = $('avatar-preview').innerText;
+            saveProfile(name, avatar);
+            state.user = { uid: 'u_' + Date.now() + Math.floor(Math.random() * 1000), name, avatar };
+            updateUIProfile();
+            $('lbl-player-name').innerText = name;
+            setScreenActive('screen-lobby');
+        });
+
+        // --- Room System ---
+        $('input-room-id').addEventListener('input', e => e.target.value = e.target.value.toUpperCase());
+
+        $('btn-create-room').addEventListener('click', async (e) => {
+            initAudio(); e.target.disabled = true;
+            const roomId = Math.random().toString(36).substring(2, 8).toUpperCase();
+            try {
+                await set(ref(db, `rooms/${roomId}`), {
+                    host: state.user.uid,
+                    players: [state.user.uid],
+                    playerNames: { [state.user.uid]: state.user.name },
+                    status: 'waiting',
+                    gridSize: 5,
+                    createdAt: serverTimestamp()
+                });
+                e.target.disabled = false;
+                joinRoom(roomId);
+            } catch (err) {
+                e.target.disabled = false;
+                showToast('Failed to create room.', true);
+            }
+        });
+
+        $('btn-join-room').addEventListener('click', (e) => {
+            initAudio();
+            const id = $('input-room-id').value.trim().toUpperCase();
+            if (id) { e.target.disabled = true; joinRoom(id).finally(() => e.target.disabled = false); }
+            else showToast('Enter a valid Room ID', true);
+        });
+
+        async function joinRoom(roomId) {
+            const roomRef = ref(db, `rooms/${roomId}`);
+            const snap = await get(roomRef);
+            if (!snap.exists()) return showToast('Room not found!', true);
+            const data = snap.val();
+            let players = data.players || [];
+            if (data.status !== 'waiting' && !players.includes(state.user.uid)) return showToast('Game is already in progress!', true);
+            if (players.length >= 4 && !players.includes(state.user.uid)) return showToast('Room is full (Max 4)!', true);
+
+            if (!players.includes(state.user.uid)) {
+                players.push(state.user.uid);
+                await update(roomRef, {
+                    players,
+                    [`playerNames/${state.user.uid}`]: state.user.name
+                });
+            }
+
+            const presenceRef = ref(db, `rooms/${roomId}/presence/${state.user.uid}`);
+            await set(presenceRef, true);
+            onDisconnect(presenceRef).set(null);
+
+            state.roomId = roomId;
+            $('lbl-room-id').innerText = roomId;
+            setScreenActive('screen-room');
+            state.presenceHandled.clear();
+            state.svgInitialized = false;
+            state.boxAnimations.clear();
+            state.lastKnownBoxes = null;
+            listenRoom();
+            listenChat();
+            listenPresence();
+        }
+
+        $('btn-leave').addEventListener('click', () => {
+            confirmAction('Leave Room', 'Are you sure you want to leave the room?', () => leaveRoom(false));
+        });
+
+        async function leaveRoom(forced = false) {
+            if (state.unsubRoom) state.unsubRoom();
+            if (state.unsubChat) state.unsubChat();
+            if (state.unsubPresence) state.unsubPresence();
+
+            if (!forced && state.roomId && state.room) {
+                const roomRef = ref(db, `rooms/${state.roomId}`);
+                const presenceRef = ref(db, `rooms/${state.roomId}/presence/${state.user.uid}`);
+                try {
+                    await set(presenceRef, null);
+                    const newPlayers = (state.room.players || []).filter(p => p !== state.user.uid);
+                    if (newPlayers.length === 0) {
+                        await set(roomRef, null);
+                    } else {
+                        let updates = { players: newPlayers };
+                        if (state.room.host === state.user.uid) updates.host = newPlayers[0];
+                        await update(roomRef, updates);
+                    }
+                } catch (e) { /* ignore */ }
+            }
+            state.roomId = null;
+            state.room = null;
+            state.presenceHandled.clear();
+            setScreenActive('screen-lobby');
+        }
+
+        // Fixed Copy Button
+        let copyTimeout;
+        $('btn-copy-room').addEventListener('click', () => {
+            navigator.clipboard.writeText(state.roomId).then(() => {
+                const icon = $('btn-copy-room');
+                icon.className = 'fa-solid fa-check'; icon.style.color = 'var(--secondary)';
+                showToast('Room ID Copied!');
+                clearTimeout(copyTimeout);
+                copyTimeout = setTimeout(() => {
+                    icon.className = 'fa-solid fa-copy'; icon.style.color = 'var(--text-muted)';
+                }, 2000);
+            }).catch(() => {
+                showToast('Failed to copy!', true);
+            });
+        });
+
+        // --- Game Logic ---
+        function listenRoom() {
+            if (state.unsubRoom) state.unsubRoom();
+            state.unsubRoom = onValue(ref(db, `rooms/${state.roomId}`), snap => {
+                if (!snap.exists()) { showToast('Room closed by host.', true); return leaveRoom(true); }
+                state.room = snap.val();
+                state.lastKnownBoxes = state.room.boxes || {};
+                if (state.room.status === 'waiting') renderWaiting();
+                else renderGame();
+                handleResetVoteUI();
+                checkTurnSkip();
+            });
+        }
+
+        function checkTurnSkip() {
+            if (!state.room || state.room.status !== 'playing') return;
+            const turnOrder = state.room.turnOrder || [];
+            const curTurnId = turnOrder[state.room.turnIndex];
+            const players = state.room.players || [];
+            if (!curTurnId || players.includes(curTurnId)) return;
+            if (players.length === 0) return;
+            const roomRef = ref(db, `rooms/${state.roomId}`);
+            runTransaction(roomRef, (currentData) => {
+                if (!currentData || currentData.status !== 'playing') return;
+                const cur = (currentData.turnOrder || [])[currentData.turnIndex];
+                const pl = currentData.players || [];
+                if (cur && !pl.includes(cur)) {
+                    const next = (currentData.turnIndex + 1) % (currentData.turnOrder || []).length;
+                    return { ...currentData, turnIndex: next };
+                }
+                return;
+            }).catch(() => {});
+        }
+
+        function renderWaiting() {
+            state.gameOverAlerted = false;
+            $('waiting-area').classList.remove('hidden');
+            $('playing-area').classList.add('hidden');
+            $('btn-reset').classList.add('hidden');
+            const ul = $('player-list');
+            ul.innerHTML = '';
+            (state.room.players || []).forEach(uid => {
+                const isHost = uid === state.room.host;
+                const name = (state.room.playerNames || {})[uid] || "Player";
+                ul.innerHTML += `<li style="padding:12px; background:var(--bg-color); margin-bottom:8px; border-radius:10px; display:flex; align-items:center; gap:10px; border:1px solid var(--text-muted);">
+                    <i class="fa-solid ${isHost ? 'fa-crown' : 'fa-user'}" style="color:${isHost ? '#ffd700' : 'var(--text-muted)'};"></i>
+                    <strong>${name}</strong> ${uid === state.user.uid ? '<span style="font-size:12px; color:var(--secondary);">(You)</span>' : ''}
+                </li>`;
+            });
+            const amHost = state.room.host === state.user.uid;
+            $('host-controls').classList.toggle('hidden', !amHost);
+            $('lbl-waiting-msg').innerText = amHost ? "" : "Waiting for the host to start the game...";
+        }
+
+        async function startNewGame() {
+            if (state.room.host !== state.user.uid) return;
+            const size = parseInt($('select-grid-size').value);
+            const scores = {};
+            (state.room.players || []).forEach(p => scores[p] = 0);
+            await update(ref(db, `rooms/${state.roomId}`), {
+                status: 'playing',
+                gridSize: size,
+                turnOrder: state.room.players,
+                turnIndex: 0,
+                scores,
+                linesH: null,
+                linesV: null,
+                boxes: null,
+                resetRequest: null
+            });
+            state.boxAnimations.clear();
+            state.lastKnownBoxes = null;
+            state.gameOverAlerted = false;
+        }
+
+        $('btn-start-game').addEventListener('click', startNewGame);
+
+        function renderGame() {
+            $('waiting-area').classList.add('hidden');
+            $('playing-area').classList.remove('hidden');
+            const totalBoxes = state.room.gridSize * state.room.gridSize;
+            const claimed = Object.keys(state.room.boxes || {}).length;
+            const gameOver = claimed === totalBoxes;
+            if (state.room.host === state.user.uid) {
+                const resetBtn = $('btn-reset');
+                resetBtn.classList.remove('hidden');
+                if (gameOver) {
+                    resetBtn.innerHTML = '<i class="fa-solid fa-play"></i> New Game';
+                    resetBtn.classList.add('btn-danger');
+                } else {
+                    resetBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i> Reset';
+                    resetBtn.classList.add('btn-danger');
+                }
+            } else {
+                $('btn-reset').classList.add('hidden');
+            }
+            renderScoreboard();
+            renderTurnIndicator();
+            renderSVGGrid();
+        }
+
+        $('btn-reset').addEventListener('click', () => {
+            if (!state.room) return;
+            const totalBoxes = state.room.gridSize * state.room.gridSize;
+            const claimed = Object.keys(state.room.boxes || {}).length;
+            if (claimed === totalBoxes) {
+                if (state.room.host === state.user.uid) startNewGame();
+                else showToast('Only host can start a new game.', true);
+            } else {
+                update(ref(db, `rooms/${state.roomId}/resetRequest`), { requestedBy: state.user.uid, [`votes/${state.user.uid}`]: 'yes' });
+            }
+        });
+
+        function renderScoreboard() {
+            const sb = $('scoreboard');
+            sb.innerHTML = '';
+            const order = state.room.turnOrder || [];
+            const curTurn = order[state.room.turnIndex];
+            order.forEach((uid, i) => {
+                const name = ((state.room.playerNames || {})[uid] || "Player").substring(0, 8);
+                const score = (state.room.scores || {})[uid] || 0;
+                const active = uid === curTurn;
+                const c = state.playerColors[i % 4];
+                const isDisconnected = !(state.room.players || []).includes(uid);
+                sb.innerHTML += `<div class="player-card ${active ? 'active' : ''}" style="${active ? `border-color:${c}; color:${c}` : ''} ${isDisconnected ? 'opacity:0.4;' : ''}">
+                    <span style="font-size:12px; font-weight:bold;">${name}${isDisconnected ? '(Left)' : ''}</span>
+                    <span style="font-size:22px; font-weight:bold;">${score}</span>
+                </div>`;
+            });
+        }
+
+        function renderTurnIndicator() {
+            const lbl = $('lbl-turn-indicator');
+            const totalBoxes = state.room.gridSize * state.room.gridSize;
+            const claimedBoxes = Object.keys(state.room.boxes || {}).length;
+            if (claimedBoxes === totalBoxes) {
+                let max = -1, winners = [];
+                for (let [uid, s] of Object.entries(state.room.scores || {})) {
+                    if (s > max) { max = s; winners = [uid]; }
+                    else if (s === max) winners.push(uid);
+                }
+                const winText = winners.includes(state.user.uid) ? "🏆 You Won the Game!" : `🏆 ${state.room.playerNames?.[winners[0]]} Won!`;
+                lbl.innerText = winText; lbl.style.color = "#ffd700";
+                if (!state.gameOverAlerted) {
+                    state.gameOverAlerted = true;
+                    showToast(winText);
+                }
+                return;
+            }
+            const curTurn = (state.room.turnOrder || [])[state.room.turnIndex];
+            if (curTurn === state.user.uid) { lbl.innerText = "🎮 It's Your Turn!"; lbl.style.color = "var(--secondary)"; }
+            else { lbl.innerText = `⏳ Waiting for ${state.room.playerNames?.[curTurn]}...`; lbl.style.color = "var(--text-muted)"; }
+        }
+
+        function renderSVGGrid() {
+            const svg = $('game-svg');
+            const N = state.room.gridSize;
+            const pad = 50, size = 1000, usable = size - 2 * pad, step = usable / N;
+
+            if (!state.svgInitialized || state.currentGridSize !== N) {
+                svg.innerHTML = '';
+                state.boxAnimations.clear();
+                state.currentGridSize = N;
+                for (let r = 0; r <= N; r++) {
+                    for (let c = 0; c <= N; c++) {
+                        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                        circle.setAttribute('cx', pad + c * step);
+                        circle.setAttribute('cy', pad + r * step);
+                        circle.setAttribute('r', '14');
+                        circle.setAttribute('class', 'svg-dot');
+                        svg.appendChild(circle);
+                    }
+                }
+
+                for (let r = 0; r < N; r++) {
+                    for (let c = 0; c < N; c++) {
+                        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                        rect.setAttribute('id', `box-${r}-${c}`);
+                        rect.setAttribute('x', pad + c * step);
+                        rect.setAttribute('y', pad + r * step);
+                        rect.setAttribute('width', step);
+                        rect.setAttribute('height', step);
+                        rect.setAttribute('fill', 'none');
+                        rect.setAttribute('opacity', '0');
+                        svg.appendChild(rect);
+                    }
+                }
+
+                for (let r = 0; r <= N; r++) {
+                    for (let c = 0; c < N; c++) {
+                        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                        g.setAttribute('id', `line-H-${r}-${c}`);
+                        const click = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        click.setAttribute('x1', pad + c * step); click.setAttribute('y1', pad + r * step);
+                        click.setAttribute('x2', pad + (c + 1) * step); click.setAttribute('y2', pad + r * step);
+                        click.setAttribute('class', 'svg-line-click');
+                        click.addEventListener('click', () => processMove('H', r, c, `H-${r}-${c}`));
+                        const vis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        vis.setAttribute('x1', pad + c * step); vis.setAttribute('y1', pad + r * step);
+                        vis.setAttribute('x2', pad + (c + 1) * step); vis.setAttribute('y2', pad + r * step);
+                        vis.setAttribute('class', 'svg-line-vis');
+                        g.appendChild(click); g.appendChild(vis);
+                        svg.appendChild(g);
+                    }
+                }
+
+                for (let r = 0; r < N; r++) {
+                    for (let c = 0; c <= N; c++) {
+                        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                        g.setAttribute('id', `line-V-${r}-${c}`);
+                        const click = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        click.setAttribute('x1', pad + c * step); click.setAttribute('y1', pad + r * step);
+                        click.setAttribute('x2', pad + c * step); click.setAttribute('y2', pad + (r + 1) * step);
+                        click.setAttribute('class', 'svg-line-click');
+                        click.addEventListener('click', () => processMove('V', r, c, `V-${r}-${c}`));
+                        const vis = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        vis.setAttribute('x1', pad + c * step); vis.setAttribute('y1', pad + r * step);
+                        vis.setAttribute('x2', pad + c * step); vis.setAttribute('y2', pad + (r + 1) * step);
+                        vis.setAttribute('class', 'svg-line-vis');
+                        g.appendChild(click); g.appendChild(vis);
+                        svg.appendChild(g);
+                    }
+                }
+                state.svgInitialized = true;
+            }
+
+            const { linesH = {}, linesV = {}, boxes = {}, turnOrder = [] } = state.room;
+
+            for (let r = 0; r <= N; r++) {
+                for (let c = 0; c < N; c++) {
+                    const id = `H-${r}-${c}`;
+                    const g = svg.querySelector(`#line-H-${r}-${c}`);
+                    if (!g) continue;
+                    const click = g.children[0];
+                    const vis = g.children[1];
+                    if (linesH[id]) {
+                        vis.classList.add('claimed');
+                        click.style.display = 'none';
+                    } else {
+                        vis.classList.remove('claimed');
+                        click.style.display = '';
+                    }
+                }
+            }
+
+            for (let r = 0; r < N; r++) {
+                for (let c = 0; c <= N; c++) {
+                    const id = `V-${r}-${c}`;
+                    const g = svg.querySelector(`#line-V-${r}-${c}`);
+                    if (!g) continue;
+                    const click = g.children[0];
+                    const vis = g.children[1];
+                    if (linesV[id]) {
+                        vis.classList.add('claimed');
+                        click.style.display = 'none';
+                    } else {
+                        vis.classList.remove('claimed');
+                        click.style.display = '';
+                    }
+                }
+            }
+
+            for (let r = 0; r < N; r++) {
+                for (let c = 0; c < N; c++) {
+                    const boxId = `${r}-${c}`;
+                    const rect = svg.querySelector(`#box-${r}-${c}`);
+                    if (!rect) continue;
+                    if (boxes[boxId]) {
+                        const ownerIdx = turnOrder.indexOf(boxes[boxId]);
+                        rect.setAttribute('fill', state.playerColors[ownerIdx % 4]);
+                        rect.setAttribute('opacity', '0.85');
+                        if (!state.boxAnimations.has(boxId)) {
+                            rect.classList.add('svg-box');
+                            state.boxAnimations.add(boxId);
+                        }
+                    } else {
+                        rect.setAttribute('fill', 'none');
+                        rect.setAttribute('opacity', '0');
+                        rect.classList.remove('svg-box');
+                    }
+                }
+            }
+        }
+
+        async function processMove(type, r, c, lineId) {
+            const { turnOrder = [], turnIndex = 0 } = state.room;
+            if (turnOrder[turnIndex] !== state.user.uid) return showToast("It's not your turn!", true);
+
+            const oldBoxes = state.lastKnownBoxes || {};
+            const oldCount = Object.keys(oldBoxes).length;
+            const roomRef = ref(db, `rooms/${state.roomId}`);
+
+            try {
+                await runTransaction(roomRef, (currentData) => {
+                    if (!currentData) return null;
+                    const totalBoxes = currentData.gridSize * currentData.gridSize;
+                    if (Object.keys(currentData.boxes || {}).length === totalBoxes) return;
+
+                    const linesH = currentData.linesH || {};
+                    const linesV = currentData.linesV || {};
+                    const boxes = currentData.boxes || {};
+                    const scores = currentData.scores || {};
+                    const gridSize = currentData.gridSize;
+                    const curTurnId = (currentData.turnOrder || [])[currentData.turnIndex];
+
+                    if (curTurnId !== state.user.uid) return;
+
+                    const already = type === 'H' ? linesH[lineId] : linesV[lineId];
+                    if (already) return;
+
+                    if (type === 'H') linesH[lineId] = true;
+                    else linesV[lineId] = true;
+
+                    let boxesWon = 0;
+                    const checkBox = (br, bc) => {
+                        if (br < 0 || br >= gridSize || bc < 0 || bc >= gridSize || boxes[`${br}-${bc}`]) return;
+                        if (linesH[`H-${br}-${bc}`] && linesH[`H-${br + 1}-${bc}`] &&
+                            linesV[`V-${br}-${bc}`] && linesV[`V-${br}-${bc + 1}`]) {
+                            boxes[`${br}-${bc}`] = state.user.uid;
+                            scores[state.user.uid] = (scores[state.user.uid] || 0) + 1;
+                            boxesWon++;
+                        }
+                    };
+
+                    if (type === 'H') { checkBox(r - 1, c); checkBox(r, c); }
+                    else { checkBox(r, c - 1); checkBox(r, c); }
+
+                    const nextTurn = boxesWon > 0 ? currentData.turnIndex : (currentData.turnIndex + 1) % (currentData.turnOrder || []).length;
+                    return { ...currentData, linesH, linesV, boxes, scores, turnIndex: nextTurn };
+                }).then((result) => {
+                    if (result.committed) {
+                        const newData = result.snapshot.val();
+                        const newBoxes = newData.boxes || {};
+                        const newCount = Object.keys(newBoxes).length;
+                        (newCount > oldCount) ? playSound('box') : playSound('line');
+                    } else if (result.snapshot) {
+                        showToast("Someone already took that line!", true);
+                    }
+                });
+            } catch (e) {
+                showToast("Error processing move.", true);
+            }
+        }
+
+        function listenPresence() {
+            if (state.unsubPresence) state.unsubPresence();
+            const presRef = ref(db, `rooms/${state.roomId}/presence`);
+            state.unsubPresence = onValue(presRef, async (snap) => {
+                if (!state.room || !state.room.players) return;
+                const presence = snap.val() || {};
+                for (const uid of state.room.players) {
+                    if (!presence[uid] && uid !== state.user.uid && !state.presenceHandled.has(uid)) {
+                        state.presenceHandled.add(uid);
+                        if (state.room.host === state.user.uid || state.room.players.indexOf(state.user.uid) === 0) {
+                            await handlePlayerLeft(uid);
+                        }
+                    }
+                }
+            });
+        }
+
+        async function handlePlayerLeft(uid) {
+            if (!state.roomId) return;
+            const roomRef = ref(db, `rooms/${state.roomId}`);
+            try {
+                await runTransaction(roomRef, (currentData) => {
+                    if (!currentData) return null;
+                    const players = currentData.players ? currentData.players.filter(p => p !== uid) : [];
+                    if (players.length === 0) return null;
+                    let turnOrder = currentData.turnOrder ? currentData.turnOrder.filter(p => p !== uid) : [];
+                    if (turnOrder.length === 0) turnOrder = players;
+                    const scores = currentData.scores || {};
+                    delete scores[uid];
+                    const playerNames = currentData.playerNames || {};
+                    delete playerNames[uid];
+                    let turnIndex = currentData.turnIndex;
+                    if (turnIndex >= turnOrder.length) turnIndex = 0;
+                    const host = currentData.host === uid ? players[0] : currentData.host;
+                    return { ...currentData, players, turnOrder, scores, playerNames, turnIndex, host };
+                });
+            } catch (e) { /* ignore */ }
+        }
+
+        function handleResetVoteUI() {
+            const req = state.room?.resetRequest;
+            const modal = $('modal-reset');
+            if (!req) return modal.classList.add('hidden');
+            if (!req.votes || !req.votes[state.user.uid]) modal.classList.remove('hidden');
+            else modal.classList.add('hidden');
+            if (state.room.host === state.user.uid) {
+                const votes = Object.values(req.votes || {});
+                if (votes.length === (state.room.players || []).length) {
+                    if (votes.includes('no')) {
+                        showToast("Reset cancelled by a player", true);
+                        update(ref(db, `rooms/${state.roomId}`), { resetRequest: null });
+                    } else {
+                        startNewGame();
+                    }
+                }
+            }
+        }
+
+        // Chat
+        let chatSnapshot = null;
+        function listenChat() {
+            if (state.unsubChat) state.unsubChat();
+            state.unsubChat = onValue(ref(db, `rooms/${state.roomId}/messages`), snap => {
+                chatSnapshot = snap;
+                renderChatMessages();
+            });
+        }
+        function renderChatMessages() {
+            const box = $('chat-messages');
+            box.innerHTML = '';
+            let hasUnread = false;
+            if (!chatSnapshot || !chatSnapshot.exists()) {
+                box.innerHTML = `<div style="text-align:center; color:var(--text-muted); margin-top:20px; font-size:14px;">No messages yet. Say hi! 👋</div>`;
+                return;
+            }
+            chatSnapshot.forEach(child => {
+                const msg = child.val();
+                const isMe = msg.senderId === state.user.uid;
+                box.innerHTML += `<div class="msg ${isMe ? 'msg-me' : 'msg-other'}">
+                    ${!isMe ? `<div style="font-size:11px; opacity:0.8; margin-bottom:2px; font-weight:bold;">${msg.senderName}</div>` : ''}${msg.text}
+                </div>`;
+                if (!isMe && !(msg.readBy && msg.readBy[state.user.uid])) hasUnread = true;
+            });
+            box.scrollTop = box.scrollHeight;
+            $('unread-dot').style.display = (hasUnread && !state.isChatOpen) ? 'block' : 'none';
+        }
+
+        $('chat-fab').addEventListener('click', () => {
+            state.isChatOpen = true;
+            $('chat-modal').classList.remove('hidden');
+            $('unread-dot').style.display = 'none';
+            markAllMessagesRead();
+        });
+        $('btn-close-chat').addEventListener('click', () => {
+            state.isChatOpen = false;
+            $('chat-modal').classList.add('hidden');
+        });
+        $('btn-send-chat').addEventListener('click', sendChat);
+        $('input-chat').addEventListener('keypress', e => { if (e.key === 'Enter') sendChat(); });
+
+        async function sendChat() {
+            const input = $('input-chat');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            await push(ref(db, `rooms/${state.roomId}/messages`), {
+                senderId: state.user.uid,
+                senderName: state.user.name,
+                text,
+                timestamp: serverTimestamp(),
+                readBy: { [state.user.uid]: true }
+            });
+        }
+
+        async function markAllMessagesRead() {
+            if (!chatSnapshot || !chatSnapshot.exists()) return;
+            const updates = {};
+            chatSnapshot.forEach(child => {
+                const msg = child.val();
+                if (msg.senderId !== state.user.uid && !(msg.readBy && msg.readBy[state.user.uid])) {
+                    updates[`messages/${child.key}/readBy/${state.user.uid}`] = true;
+                }
+            });
+            if (Object.keys(updates).length > 0) {
+                await update(ref(db, `rooms/${state.roomId}`), updates);
+            }
+        }
+
+        // Init
+        window.onload = () => {
+            initTheme();
+            initAuth();
+            // Preload avatar picker grid for later use
+            const grid = $('emoji-grid');
+            if (grid.children.length === 0) {
+                EMOJIS.forEach(emoji => {
+                    const div = document.createElement('div');
+                    div.className = 'emoji-item';
+                    div.innerText = emoji;
+                    div.addEventListener('click', () => {
+                        $('profile-avatar-display').innerText = emoji;
+                        grid.querySelectorAll('.emoji-item').forEach(el => el.classList.remove('selected'));
+                        div.classList.add('selected');
+                    });
+                    grid.appendChild(div);
+                });
+            }
+        };
     </script>
 </body>
 </html>
